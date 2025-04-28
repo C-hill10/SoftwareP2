@@ -72,8 +72,12 @@ for _ in range(500):  # This is an arbitrary value
     goat_positions[move_mask] = new_positions[move_mask]
 
     #check for exit
+    exited = (goat_positions == exit_tensor).all(dim=1)
+    goat_active[exited] = False
 
     #log positions
+    for i in range(NUM_GOATS):
+        goat_logs[i].append(tuple(goat_positions[i].cpu().numpy()))
 #end iteration loop
 
 #output
