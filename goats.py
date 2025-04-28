@@ -39,9 +39,11 @@ while len(positions) < NUM_GOATS:
 goat_positions = torch.tensor(list(positions), dtype=torch.int32, device=device)
 goat_active = torch.ones(NUM_GOATS, dtype=torch.bool, device=device)
 
+#up, down, left, right
 directions = torch.tensor([[0, 1], [0, -1], [-1, 0], [1, 0]], dtype=torch.int32, device=device)
 
 #need movement log here-ish
+goat_logs = [[tuple(pos.cpu().numpy())] for pos in goat_positions]
 
 #begin iteration loop
 for _ in range(500):  # This is an arbitrary value
@@ -81,3 +83,14 @@ for _ in range(500):  # This is an arbitrary value
 #end iteration loop
 
 #output
+#make output folder
+output_dir = "movement_logs"
+os.makedirs(output_dir, exist_ok=True)
+output_filename = os.path.join(output_dir, "goat_movements.txt")
+
+# Write movement log to file
+with open(output_filename, "w") as f:
+    f.write(f"Exit: {exit_pos}\n\n")
+    for i, log in enumerate(goat_logs):
+        line = f"{i+1}: {', '.join(f'({x},{y})' for x, y in log)}\n"
+        f.write(line)
