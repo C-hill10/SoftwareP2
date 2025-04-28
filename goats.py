@@ -10,6 +10,7 @@ GRID_SIZE=int(input("Enter grid size (5 to 100): "))
 assert 5 <= GRID_SIZE <= 100, "Grid size must be in range"
 INNER_GRID_SIZE= GRID_SIZE -2 
 NUM_GOATS = (INNER_GRID_SIZE ** 2)
+#need to add a DENSITY = code here for dynamic goat density
 
 grid = torch.zeros((GRID_SIZE, GRID_SIZE), dtype=torch.int32, device="cuda")
 
@@ -94,3 +95,6 @@ with open(output_filename, "w") as f:
     for i, log in enumerate(goat_logs):
         line = f"{i+1}: {', '.join(f'({x},{y})' for x, y in log)}\n"
         f.write(line)
+
+
+#create visualization
