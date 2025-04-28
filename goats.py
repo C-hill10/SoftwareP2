@@ -14,7 +14,21 @@ NUM_GOATS = (INNER_GRID_SIZE ** 2)
 grid = torch.zeros((GRID_SIZE, GRID_SIZE), dtype=torch.int32, device="cuda")
 
 #need to place exit randomly
-
+#choose a random spot for the exit, 1-4 going clockwise starting from the bottom decides which side the exit is on 
+#then a random number after decides which spot on that wall the exit will be
+direction=random.randint(1,4)
+if direction == 1
+    exity=0
+    exitx=random.randint(1,INNER_GRID_SIZE)
+elif direction ==2
+    exitx=0
+    exity=random.randint(1,INNER_GRID_SIZE)
+elif direction ==3
+    exity=INNER_GRID_SIZE+1
+    exitx=random.randint(1,INNER_GRID_SIZE)
+elif direction ==4
+    exitx=INNER_GRID_SIZE+1
+    exity=random.randint(1,INNER_GRID_SIZE)
 #initialize goats (make sure in inner grid)
 positions = set()
 while len(positions) < NUM_GOATS:
