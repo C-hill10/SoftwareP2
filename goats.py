@@ -2,6 +2,7 @@ import torch
 import numpy as np 
 import csv
 import random
+import os
 import matplotlib.pyplot as plt 
 
 
@@ -20,19 +21,24 @@ grid = torch.zeros((GRID_SIZE, GRID_SIZE), dtype=torch.int32, device="cuda")
 #need to place exit randomly
 #choose a random spot for the exit, 1-4 going clockwise starting from the bottom decides which side the exit is on 
 #then a random number after decides which spot on that wall the exit will be
-direction=random.randint(1,4)
-if direction == 1
-    exity=0
-    exitx=random.randint(1,INNER_GRID_SIZE)
-elif direction ==2
-    exitx=0
-    exity=random.randint(1,INNER_GRID_SIZE)
-elif direction ==3
-    exity=INNER_GRID_SIZE+1
-    exitx=random.randint(1,INNER_GRID_SIZE)
-elif direction ==4
-    exitx=INNER_GRID_SIZE+1
-    exity=random.randint(1,INNER_GRID_SIZE)
+direction = random.randint(1, 4)
+if direction == 1:
+    exity = 0
+    exitx = random.randint(1, INNER_GRID_SIZE)
+elif direction == 2:
+    exitx = 0
+    exity = random.randint(1, INNER_GRID_SIZE)
+elif direction == 3:
+    exity = INNER_GRID_SIZE + 1
+    exitx = random.randint(1, INNER_GRID_SIZE)
+else:  # direction == 4
+    exitx = INNER_GRID_SIZE + 1
+    exity = random.randint(1, INNER_GRID_SIZE)
+
+exit_pos = (exitx, exity)
+exit_tensor = torch.tensor(exit_pos, device=device)
+
+print(f"\n Exit is at: {exit_pos}")
 
 #initialize goats (make sure in inner grid)
 positions = set()
@@ -49,6 +55,7 @@ directions = torch.tensor([[0, 1], [0, -1], [-1, 0], [1, 0]], dtype=torch.int32,
 
 #need movement log here-ish
 goat_logs = [[tuple(pos.cpu().numpy())] for pos in goat_positions]
+goat_paths = [[tuple(pos.cpu().numpy())] for pos in goat_positions]  # for print out
 
 #begin iteration loop
 MAX_STEPS = 3000
@@ -85,7 +92,9 @@ for step in range(MAX_STEPS):  # This is an arbitrary value
 
     #log positions
     for i in range(NUM_GOATS):
-        goat_logs[i].append(tuple(goat_positions[i].cpu().numpy()))
+        pos_tuple = tuple(goat_positions[i].cpu().numpy())
+        goat_logs[i].append(pos_tuple)
+        goat_paths[i].append(pos_tuple)
 
 print(f"Simulation completed in {step+1} steps.")
 #end iteration loop
