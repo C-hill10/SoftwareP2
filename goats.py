@@ -51,7 +51,8 @@ directions = torch.tensor([[0, 1], [0, -1], [-1, 0], [1, 0]], dtype=torch.int32,
 goat_logs = [[tuple(pos.cpu().numpy())] for pos in goat_positions]
 
 #begin iteration loop
-for _ in range(500):  # This is an arbitrary value
+MAX_STEPS = 3000
+for step in range(MAX_STEPS):  # This is an arbitrary value
     if not goat_active.any():
         break
 
@@ -85,6 +86,8 @@ for _ in range(500):  # This is an arbitrary value
     #log positions
     for i in range(NUM_GOATS):
         goat_logs[i].append(tuple(goat_positions[i].cpu().numpy()))
+
+print(f"Simulation completed in {step+1} steps.")
 #end iteration loop
 
 #output
