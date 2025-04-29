@@ -6,10 +6,13 @@ import matplotlib.pyplot as plt
 
 
 #User input for scalable grid size 
-GRID_SIZE=int(input("Enter grid size (5 to 100): "))
-assert 5 <= GRID_SIZE <= 100, "Grid size must be in range"
-INNER_GRID_SIZE= GRID_SIZE -2 
-NUM_GOATS = (INNER_GRID_SIZE ** 2)
+GRID_SIZE = int(input("Enter grid size (5 to 100): "))
+assert 5 <= GRID_SIZE <= 100, "Grid size must be between 5 and 100"
+INNER_GRID_SIZE = GRID_SIZE - 2
+
+DENSITY = float(input("Enter goat density percentage (10 to 80): "))
+assert 10 <= DENSITY <= 80, "Density must be between 10 and 80"
+NUM_GOATS = int((INNER_GRID_SIZE ** 2) * (DENSITY / 100))
 #need to add a DENSITY = code here for dynamic goat density
 
 grid = torch.zeros((GRID_SIZE, GRID_SIZE), dtype=torch.int32, device="cuda")
@@ -30,6 +33,7 @@ elif direction ==3
 elif direction ==4
     exitx=INNER_GRID_SIZE+1
     exity=random.randint(1,INNER_GRID_SIZE)
+
 #initialize goats (make sure in inner grid)
 positions = set()
 while len(positions) < NUM_GOATS:
