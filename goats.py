@@ -103,5 +103,10 @@ with open(output_filename, "w") as f:
         line = f"{i+1}: {', '.join(f'({x},{y})' for x, y in log)}\n"
         f.write(line)
 
+#output of goat paths
+print("\n Goat Movement Paths:")
+for i, path in enumerate(goat_paths):
+    print(f"Goat {i+1}: {path}")
+
 
 #create visualization
