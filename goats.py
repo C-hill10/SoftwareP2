@@ -4,8 +4,9 @@ import csv
 import random
 import os
 import matplotlib.pyplot as plt 
+import pydoc
 
-
+pydoc.writedoc('goats')
 #User input for scalable grid size 
 GRID_SIZE = int(input("Enter grid size (5 to 100): "))
 assert 5 <= GRID_SIZE <= 100, "Grid size must be between 5 and 100"
@@ -21,6 +22,10 @@ grid = torch.zeros((GRID_SIZE, GRID_SIZE), dtype=torch.int32, device="cuda")
 #need to place exit randomly
 #choose a random spot for the exit, 1-4 going clockwise starting from the bottom decides which side the exit is on 
 #then a random number after decides which spot on that wall the exit will be
+"""
+This section decides the location for the exit of the pen
+
+"""
 direction = random.randint(1, 4)
 if direction == 1:
     exity = 0
@@ -34,12 +39,15 @@ elif direction == 3:
 else:  # direction == 4
     exitx = INNER_GRID_SIZE + 1
     exity = random.randint(1, INNER_GRID_SIZE)
-
+ 
 exit_pos = (exitx, exity)
-exit_tensor = torch.tensor(exit_pos, device=device)
+exit_tensor = torch.tensor(exit_pos, device="cuda")
 
 print(f"\n Exit is at: {exit_pos}")
 
+"""
+Sets up the position of the goats, making sure they are in inner grid
+"""
 #initialize goats (make sure in inner grid)
 positions = set()
 while len(positions) < NUM_GOATS:
@@ -47,30 +55,39 @@ while len(positions) < NUM_GOATS:
     if pos != exit_pos:
         positions.add(pos)
 
-goat_positions = torch.tensor(list(positions), dtype=torch.int32, device=device)
-goat_active = torch.ones(NUM_GOATS, dtype=torch.bool, device=device)
+goat_positions = torch.tensor(list(positions), dtype=torch.int32, device="cuda")
+goat_active = torch.ones(NUM_GOATS, dtype=torch.bool, device="cuda")
 
 #up, down, left, right
-directions = torch.tensor([[0, 1], [0, -1], [-1, 0], [1, 0]], dtype=torch.int32, device=device)
-
+directions = torch.tensor([[0, 1], [0, -1], [-1, 0], [1, 0]], dtype=torch.int32, device="cuda")
+""" 
+Logs for goats
+"""
 #need movement log here-ish
 goat_logs = [[tuple(pos.cpu().numpy())] for pos in goat_positions]
 goat_paths = [[tuple(pos.cpu().numpy())] for pos in goat_positions]  # for print out
 
+"""
+main loop of program, each iteration the goats decide on a direction and try to move in that direction
+"""
 #begin iteration loop
 MAX_STEPS = 3000
 for step in range(MAX_STEPS):  # This is an arbitrary value
     if not goat_active.any():
         break
 
-    rand_dirs = directions[torch.randint(0, 4, (NUM_GOATS,), device=device)]
+    rand_dirs = directions[torch.randint(0, 4, (NUM_GOATS,), device="cuda")]
     new_positions = goat_positions + rand_dirs
-
+    """
+    check that goats are making a legal move
+    """
     # this is to prevent goats from moving to border
     x_valid = (new_positions[:, 0] > 0) & (new_positions[:, 0] < GRID_SIZE - 1)
     y_valid = (new_positions[:, 1] > 0) & (new_positions[:, 1] < GRID_SIZE - 1)
     valid_move = x_valid & y_valid & goat_active
-
+    """
+    check that no 2 goats collide with eachother
+    """
     # Check for collisions here
     occupied = set(tuple(pos.cpu().numpy()) for pos in goat_positions)
     move_mask = []
@@ -81,7 +98,7 @@ for step in range(MAX_STEPS):  # This is an arbitrary value
         else:
             move_mask.append(False)
 
-    move_mask = torch.tensor(move_mask, dtype=torch.bool, device=device)
+    move_mask = torch.tensor(move_mask, dtype=torch.bool, device="cuda")
 
     # move goats
     goat_positions[move_mask] = new_positions[move_mask]
@@ -112,10 +129,9 @@ with open(output_filename, "w") as f:
         line = f"{i+1}: {', '.join(f'({x},{y})' for x, y in log)}\n"
         f.write(line)
 
-#output of goat paths
-print("\n Goat Movement Paths:")
-for i, path in enumerate(goat_paths):
-    print(f"Goat {i+1}: {path}")
-
+# #output of goat paths
+# print("\n Goat Movement Paths:")
+# for i, path in enumerate(goat_paths):
+#     print(f"Goat {i+1}: {path}")
 
 #create visualization
